@@ -7,7 +7,7 @@ export const getUsersForSidebar=async (req,res)=>{
         const loggedInUserId=req.user._id;
         const loggedUser=await User.find({_id:{$ne:loggedInUserId}}).select("-password");
 
-        res.status(200).json(loggedInUserId);
+        res.status(200).json(loggedUser);
     } catch (error) {
         res.status(500).json({message:"Internal Server Error"})
     }
