@@ -11,6 +11,7 @@ const MessageInput = () => {
     const handleSendMessage=async(e)=>{
         e.preventDefault();
         if(!text.trim() && !imagePreview){
+          consoleole.log("Please enter a message or select an image");
             return;
         }
         try {
@@ -21,11 +22,11 @@ const MessageInput = () => {
             setText('');
             setImagePreview(null);
             fileInputRef.current.value='';
+            console.log("Message sent successfully");
         } catch (error) {
             toast.error('Error in sending messages');
             console.log("Error in sending messages",error);
         }
-
     }
     const handleImageChange=(e)=>{
         const file=e.target.files[0];

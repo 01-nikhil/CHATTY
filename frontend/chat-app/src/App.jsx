@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import NavBar from './components/NavBar'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import SignUpPage from './pages/SignUpPage'
@@ -10,17 +9,16 @@ import { useAuthStore } from './store/useAuthStore'
 import { Loader } from 'lucide-react'
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/NavBar'
-import { ToastContainer } from 'react-toastify'
 import { useThemeStore } from './store/useThemeStore'
 
 const App = () => {
-  const {authUser,checkAuth,isCheckingAuth}=useAuthStore();
+  const {authUser,checkAuth,isCheckingAuth,onlineUsers}=useAuthStore();
   const {theme}=useThemeStore();
   useEffect(()=>{
     checkAuth();
   },[checkAuth]);
 
-  console.log(authUser);
+  console.log({onlineUsers});
 
   if(isCheckingAuth && !authUser){
     return(
