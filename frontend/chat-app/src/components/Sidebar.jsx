@@ -1,31 +1,32 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { useChatStore } from '../store/useChatStore';
 import SidebarSkeleton from './skeletons/SidebarSkeleton';
 import { Users } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 
 const Sidebar = () => {
-    const {users,selectedUser,setSelectedUser,getUsers ,isUserLoading}=useChatStore();
+  const { users, selectedUser, setSelectedUser, getUsers, isUserLoading } = useChatStore();
+  const { onlineUsers, authUser } = useAuthStore();
+  const [showOnlineOnly, setShowOnlineOnly] = useState(false);
 
-   const{onlineUsers,authUser}=useAuthStore();
-  const[showOnlineOnly,setShowOnlineOnly]=useState(false);
-    useEffect(()=>{
-        getUsers();
-    },[getUsers]);
-    
+  useEffect(() => {
+    getUsers();
+  }, [getUsers]);
 
-    const filteredUsers=showOnlineOnly?users.filter(user=>onlineUsers.includes(user._id)):users; 
-    if(isUserLoading){
-        return <SidebarSkeleton/>
-    }
+  const filteredUsers = showOnlineOnly ? users.filter(user => onlineUsers.includes(user._id)) : users;
+
+  if (isUserLoading) {
+    return <SidebarSkeleton />;
+  }
+
   return (
     <aside className="h-full w-20 lg:w-72 border-r border-base-300 flex flex-col transition-all duration-200">
+      {/* Header Section */}
       <div className="border-b border-base-300 w-full p-5">
         <div className="flex items-center gap-2">
           <Users className="size-6" />
           <span className="font-medium hidden lg:block">Contacts</span>
         </div>
-        {/* TODO: Online filter toggle */}
         <div className="mt-3 hidden lg:flex items-center gap-2">
           <label className="cursor-pointer flex items-center gap-2">
             <input
@@ -40,42 +41,36 @@ const Sidebar = () => {
         </div>
       </div>
 
+      {/* User List */}
       <div className="overflow-y-auto w-full py-3">
         {filteredUsers.map((user) => (
           <button
             key={user._id}
             onClick={() => setSelectedUser(user)}
-            className={`
-              w-full p-3 flex items-center gap-3
-              hover:bg-base-300 transition-colors
-              ${selectedUser?._id === user._id ? "bg-base-300 ring-1 ring-base-300" : ""}
-            `}
+            className={`w-full p-3 flex items-center gap-3 hover:bg-base-300 transition-colors ${
+              selectedUser?._id === user._id ? 'bg-base-300 ring-1 ring-base-300' : ''
+            }`}
           >
-            <div className="flex items-center gap-4 mx-auto lg:mx-0">
-  <div className="relative">
-    <img
-      src={user?.profile && user.profile.trim() !== "" 
-        ? user.profile 
-        : "/avatar.png"}
-      alt={user.name}
-      className="w-12 h-12 object-cover rounded-full "
-    />
-    {onlineUsers.includes(user._id) && (
-      <span
-        className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full ring-2 ring-zinc-900"
-      />
-    )}
-  </div>
+            <div className="flex items-center gap-4">
+              <div className="hidden lg:flex relative">
+                <img
+                  src={user?.profile && user.profile.trim() !== '' ? user.profile : '/avatar.png'}
+                  alt={user.name}
+                  className="w-12 h-12 object-cover rounded-full"
+                />
+                {onlineUsers.includes(user._id) && (
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full ring-2 ring-zinc-900" />
+                )}
+              </div>
 
-  {/* User info - only visible on larger screens */}
-  <div className="hidden lg:block text-left">
-    <div className="font-medium truncate">{user.fullName}</div>
-    <div className="text-sm text-zinc-400">
-      {onlineUsers.includes(user._id) ? "Online" : "Offline"}
-    </div>
-  </div>
-</div>
-
+              {/* User info - visible on all screen sizes */}
+              <div className="text-left">
+                <div className="font-medium truncate text-sm lg:text-base">{user.fullName}</div>
+                <div className="text-xs lg:text-sm text-zinc-400">
+                  {onlineUsers.includes(user._id) ? 'Online' : 'Offline'}
+                </div>
+              </div>
+            </div>
           </button>
         ))}
 
@@ -84,7 +79,7 @@ const Sidebar = () => {
         )}
       </div>
     </aside>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;
