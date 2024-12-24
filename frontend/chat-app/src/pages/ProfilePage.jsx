@@ -32,10 +32,17 @@ const ProfilePage = () => {
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
               <img
-                src={selectedImg || authUser.profile || "/avatar.png"}
-                alt="Profile"
-                className="size-32 rounded-full object-cover border-2 "
-              />
+  src={
+    selectedImg 
+      ? selectedImg 
+      : authUser?.profile && authUser.profile.trim() !== "" 
+        ? authUser.profile 
+        : "/avatar.png"
+  }
+  alt="Profile"
+  className="size-32 rounded-full object-cover border-2"
+/>
+
               <label
                 htmlFor="avatar-upload"
                 className={`

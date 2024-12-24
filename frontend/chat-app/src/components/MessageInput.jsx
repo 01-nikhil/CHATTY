@@ -22,7 +22,6 @@ const MessageInput = () => {
             setText('');
             setImagePreview(null);
             fileInputRef.current.value='';
-            console.log("Message sent successfully");
         } catch (error) {
             toast.error('Error in sending messages');
             console.log("Error in sending messages",error);

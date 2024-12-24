@@ -7,11 +7,12 @@ import { useAuthStore } from '../store/useAuthStore';
 const Sidebar = () => {
     const {users,selectedUser,setSelectedUser,getUsers ,isUserLoading}=useChatStore();
 
-   const{onlineUsers}=useAuthStore();
+   const{onlineUsers,authUser}=useAuthStore();
   const[showOnlineOnly,setShowOnlineOnly]=useState(false);
     useEffect(()=>{
         getUsers();
     },[getUsers]);
+    
 
     const filteredUsers=showOnlineOnly?users.filter(user=>onlineUsers.includes(user._id)):users; 
     if(isUserLoading){
@@ -31,7 +32,7 @@ const Sidebar = () => {
               type="checkbox"
               checked={showOnlineOnly}
               onChange={(e) => setShowOnlineOnly(e.target.checked)}
-              className="checkbox checkbox-sm"
+              className="checkbox checkbox-sm rounded-lg"
             />
             <span className="text-sm">Show online only</span>
           </label>
@@ -53,7 +54,9 @@ const Sidebar = () => {
             <div className="flex items-center gap-4 mx-auto lg:mx-0">
   <div className="relative">
     <img
-      src={user.profilePic || "/avatar.png"}
+      src={user?.profile && user.profile.trim() !== "" 
+        ? user.profile 
+        : "/avatar.png"}
       alt={user.name}
       className="w-12 h-12 object-cover rounded-full "
     />
