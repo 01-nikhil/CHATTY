@@ -58,11 +58,48 @@ export const sendMessages=async (req,res)=>{
     const receiverSocketId=getReceiverSocetId(receiverId);
     if(receiverSocketId){
         io.to(receiverSocketId).emit("newMessage",newMessage);
-        
     }
     res.status(201).json(newMessage);
 
 } catch (error) {
     res.status(500).json({message:"Internal Server Error sendMessages"});
 }
-}
+};
+
+export const clearMessages = async (req, res) => {
+  try {
+    const myId = req.user._id; // Logged-in user's ID
+    const { id: receiverId } = req.params; // Selected user's ID
+    const messages = await Message.find({
+      $or: [
+        { senderId: myId, receiverId },
+        { senderId:receiverId, receiverId: myId },
+      ],
+    });
+
+    if (messages.length === 0) {
+      // No messages to clear
+      return res.status(204).json({ message: "No messages to clear" }); // Use 204 No Content
+    }
+    // Delete all messages between the logged-in user and the receiver
+    if(messages){
+
+      await Message.deleteMany({
+        $or: [
+          { senderId: myId, receiverId },
+          { senderId: receiverId, receiverId: myId },
+        ],
+        
+      });
+      res.status(200).json({ message: "Messages cleared successfully" });
+    }
+    else
+    {
+      res.status(400).json({messgae:"No messages to clear"})
+    }
+    console.log('Messgae clearing is working');
+  } catch (error) {
+    console.error("Error clearing messages:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};

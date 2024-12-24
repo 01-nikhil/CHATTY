@@ -33,10 +33,10 @@ const ChatContainer = () => {
         }
     }, [messages]); 
 
-  // useEffect(() => {
-  //   // Log messages every time they update
-  //   console.log('Messages:', messages);
-  // }, [messages]);
+  useEffect(() => {
+    // Log messages every time they update
+    console.log('Messages:', messages);
+  }, [messages]);
 
 if(isMessageLoading){
     return(

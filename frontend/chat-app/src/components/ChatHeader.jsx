@@ -3,8 +3,10 @@ import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 
 const ChatHeader = () => {
-  const { selectedUser, setSelectedUser } = useChatStore();
+  const { selectedUser, setSelectedUser, clearMessages, messages } = useChatStore(); // Assuming messages is part of the store
   const { onlineUsers } = useAuthStore();
+
+  const isClearButtonDisabled = messages.length === 0; // Disable button if there are no messages
 
   return (
     <div className="p-2.5 border-b border-base-300">
@@ -13,7 +15,10 @@ const ChatHeader = () => {
           {/* Avatar */}
           <div className="avatar">
             <div className="size-10 rounded-full relative">
-              <img src={selectedUser.profilePic || "/avatar.png"} alt={selectedUser.fullName} />
+              <img
+                src={selectedUser.profilePic || "/avatar.png"}
+                alt={selectedUser.fullName}
+              />
             </div>
           </div>
 
@@ -26,12 +31,30 @@ const ChatHeader = () => {
           </div>
         </div>
 
-        {/* Close button */}
-        <button onClick={() => setSelectedUser(null)}>
-          <X />
-        </button>
+        {/* Buttons */}
+        <div className="flex items-center gap-2">
+          {/* Clear Chat Button */}
+          <button
+            onClick={() => clearMessages(selectedUser._id)}
+            className="relative group px-4 py-2 text-sm font-semibold text-white bg-base-300 rounded-lg shadow-lg transition-all duration-300 hover:from-pink-500 hover:to-red-500 hover:scale-105"
+            disabled={isClearButtonDisabled} // Disable if no messages
+          >
+            <span className="absolute inset-0 flex items-center justify-center text-lg opacity-0 text-white transition-opacity duration-300 group-hover:opacity-100">
+              🗑️
+            </span>
+            <span className="group-hover:opacity-0 transition-opacity duration-300">
+              Clear Chat
+            </span>
+          </button>
+
+          {/* Close Button */}
+          <button onClick={() => setSelectedUser(null)}>
+            <X />
+          </button>
+        </div>
       </div>
     </div>
   );
 };
+
 export default ChatHeader;

@@ -55,7 +55,7 @@ const Sidebar = () => {
     <img
       src={user.profilePic || "/avatar.png"}
       alt={user.name}
-      className="w-12 h-12 object-cover rounded-full"
+      className="w-12 h-12 object-cover rounded-full "
     />
     {onlineUsers.includes(user._id) && (
       <span
@@ -76,9 +76,9 @@ const Sidebar = () => {
           </button>
         ))}
 
-        {/* {filteredUsers.length === 0 && (
+        {filteredUsers.length === 0 && (
           <div className="text-center text-zinc-500 py-4">No online users</div>
-        )} */}
+        )}
       </div>
     </aside>
   )

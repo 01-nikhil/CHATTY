@@ -50,7 +50,7 @@ export const useChatStore = create((set,get) => ({
           if(!selectedUser || !socket) return;
           
           socket.on('newMessage',(newMessage)=>{
-            if(receiveMessage.sender_id!==selectedUser._id) return;
+            if(newMessage.sender_id!==selectedUser._id) return;
               set({
                   messages:[...get().messages,newMessage]
                 });
@@ -62,6 +62,21 @@ export const useChatStore = create((set,get) => ({
             const socket=useAuthStore.getState().socket;
             socket.off('newMessage');
         },
-        
+
+        clearMessages: async (userId) => {
+            try {    
+              const res=await axiosInstance.delete(`/messages/clear/${userId}`);
+              set({ messages: [] }); // Clear messages in the store
+              if (res.status === 204) {
+                toast.info("No messages to clear"); // Inform the user
+              } else {
+                set({ messages: [] }); // Clear messages in the store
+                toast.success("Chat cleared successfully");
+              }
+            } catch (error) {
+              toast.error(error.response?.data?.message || "Failed to clear chat");
+            }
+          },          
+    
         setSelectedUser:(selectedUser)=>set({selectedUser}),
     }));
