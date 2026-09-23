@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "CHATTY real-time chat",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/01-nikhil/CHATTY",
+      "provider": "github",
+      "revision": "0204304409ee695d77edb308828819fe65d28b4b"
+    },
+    "views": [
+      {
+        "id": "rest-session",
+        "label": "REST and session",
+        "focus": ["browser", "react-spa", "jwt-cookie", "express-api", "mongodb"],
+        "note": "Cookie JWT REST from the React SPA through protectRoute into MongoDB."
+      },
+      {
+        "id": "realtime",
+        "label": "Realtime path",
+        "focus": ["react-spa", "express-api", "socketio"],
+        "note": "Socket.IO shares the Express HTTP server and pushes newMessage."
+      },
+      {
+        "id": "media",
+        "label": "Image uploads",
+        "focus": ["express-api", "cloudinary"],
+        "note": "Profile and chat images upload to Cloudinary; URLs are stored in MongoDB."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "Browser",
+      "sublabel": "localhost:5173",
+      "pos": [40, 180],
+      "size": [132, 56],
+      "sources": [{ "path": "frontend/chat-app/index.html", "line": 10 }]
+    },
+    {
+      "id": "react-spa",
+      "type": "frontend",
+      "label": "React SPA",
+      "sublabel": "Vite · Zustand · Axios",
+      "brand": "react",
+      "pos": [236, 180],
+      "size": [160, 56],
+      "sources": [
+        { "path": "frontend/chat-app/src/main.jsx", "line": 7 },
+        { "path": "frontend/chat-app/src/lib/axios.js", "line": 4 }
+      ]
+    },
+    {
+      "id": "jwt-cookie",
+      "type": "security",
+      "label": "JWT cookie",
+      "sublabel": "httpOnly jwt · 7d",
+      "tag": "protectRoute",
+      "pos": [460, 48],
+      "size": [160, 56],
+      "sources": [
+        { "path": "backend/src/lib/utils.js", "line": 2 },
+        { "path": "backend/src/middleware/auth.middleware.js", "line": 3 }
+      ]
+    },
+    {
+      "id": "express-api",
+      "type": "backend",
+      "label": "Express API",
+      "sublabel": "/api/auth · /api/messages",
+      "pos": [460, 180],
+      "size": [160, 56],
+      "sources": [
+        { "path": "backend/src/index.js", "line": 24 },
+        { "path": "backend/src/lib/socket.js", "line": 5 }
+      ]
+    },
+    {
+      "id": "socketio",
+      "type": "messagebus",
+      "label": "Socket.IO",
+      "sublabel": "same http.Server",
+      "pos": [460, 312],
+      "size": [160, 56],
+      "sources": [
+        { "path": "backend/src/lib/socket.js", "line": 9 },
+        { "path": "frontend/chat-app/src/store/useAuthStore.js", "line": 90 }
+      ]
+    },
+    {
+      "id": "mongodb",
+      "type": "database",
+      "label": "MongoDB",
+      "sublabel": "User · Message",
+      "brand": "mongodb",
+      "pos": [700, 180],
+      "size": [140, 56],
+      "sources": [
+        { "path": "backend/src/lib/db.js", "line": 5 },
+        { "path": "backend/src/models/user.model.js", "line": 3 }
+      ]
+    },
+    {
+      "id": "cloudinary",
+      "type": "cloud",
+      "label": "Cloudinary",
+      "sublabel": "profile · chat images",
+      "brand": "cloudinary",
+      "pos": [700, 312],
+      "size": [140, 56],
+      "sources": [
+        { "path": "backend/src/lib/cloudinary.js", "line": 5 },
+        { "path": "backend/src/controllers/message.controller.js", "line": 45 }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Node.js process",
+      "wraps": ["jwt-cookie", "express-api", "socketio"]
+    }
+  ],
+  "connections": [
+    {
+      "id": "browser-to-spa",
+      "from": "browser",
+      "to": "react-spa",
+      "label": "loads SPA",
+      "variant": "emphasis"
+    },
+    {
+      "id": "spa-to-api",
+      "from": "react-spa",
+      "to": "express-api",
+      "label": "REST /api cookie",
+      "variant": "emphasis",
+      "labelDy": -18
+    },
+    {
+      "id": "jwt-to-api",
+      "from": "jwt-cookie",
+      "to": "express-api",
+      "label": "jwt.verify",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 18
+    },
+    {
+      "id": "spa-to-socket",
+      "from": "react-spa",
+      "to": "socketio",
+      "label": "connect userId",
+      "variant": "dashed"
+    },
+    {
+      "id": "api-to-socket",
+      "from": "express-api",
+      "to": "socketio",
+      "label": "emit newMessage",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24,
+      "labelDx": -48
+    },
+    {
+      "id": "api-to-mongo",
+      "from": "express-api",
+      "to": "mongodb",
+      "label": "Mongoose"
+    },
+    {
+      "id": "api-to-cloudinary",
+      "from": "express-api",
+      "to": "cloudinary",
+      "label": "uploader.upload",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "via": [[540, 274], [770, 274]]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Client",
+      "items": [
+        "React 18 Vite SPA with Axios cookies",
+        "socket.io-client after login or checkAuth"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "API process",
+      "items": [
+        "Express and Socket.IO share one http.Server",
+        "Cookie JWT via protectRoute into MongoDB"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Media and events",
+      "items": [
+        "Cloudinary stores profile and chat image URLs",
+        "newMessage is emitted only to the receiver socket"
+      ]
+    }
+  ]
+}
